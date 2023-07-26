@@ -4,76 +4,68 @@
 using namespace std;
 
 const double PI = 3.141592689795358979323846;
-const double g = 9.8;                    //ÖØÁ¦¼ÓËÙ¶È
-const double m = 0.0031;             //µ¯ÍèÖÊÁ¿
-const double v0 = 30.0;                //³õÊ¼ËÙ¶È
-const double theta0 = 20.0;         //³õÊ¼½Ç¶È(¶ÈÖÆÊı)
-const double dt = 0.001;              //Ê±¼ä¼ä¸ô
-const double Cd = 0.47;               //×èÁ¦ÏµÍ³
-const double rho = 1.169;            //¿ÕÆøÃÜ¶È
-const double A = 0.00226;           //½ØÃæ»ı
+const double g = 9.8;          //é‡åŠ›åŠ é€Ÿåº¦
+const double m = 0.0031;       //å¼¹ä¸¸è´¨é‡
+const double v0 = 30.0;        //åˆå§‹é€Ÿåº¦
+const double theta0 = 20.0;    //åˆå§‹è§’åº¦(åº¦åˆ¶æ•°)
+const double dt = 0.001;       //æ—¶é—´é—´éš”
+const double Cd = 0.47;        //é˜»åŠ›ç³»ç»Ÿ
+const double rho = 1.169;      //ç©ºæ°”å¯†åº¦
+const double A = 0.00226;      //æˆªé¢ç§¯
 
-//dtÊ±¼äÄÚµÄË®Æ½Î»ÒÆ£º
+//dtæ—¶é—´å†…çš„æ°´å¹³ä½ç§»ï¼š
 double xtFunction(double v0, double t)
 {
-	return v0 / (Cd * A * rho * v0 * t + 1) * dt;
+    return v0 / (Cd * A * rho * v0 * t + 1) * dt;
 }
 
-//Êµ¼ÊÂäµã£º
+//å®é™…è½ç‚¹ï¼š
 double ballisticCompensation(double tempPoint_x, double tempPoint_y, double rad)
 {
-	//Ë®Æ½³õËÙ¶È£º
-	double v0_x = v0 * cos(rad);
-	//·ÉĞĞÊ±¼ä£º
-	double flightTime = 0;
-	double x = 0;
+    //æ°´å¹³åˆé€Ÿåº¦ï¼š
+    double v0_x = v0 * cos(rad);
+    //æ±‚è§£é£è¡Œæ—¶é—´ï¼š
+    double flightTime = 0;
+    double x = 0;
     while (x < tempPoint_x)
-	{
-		x += xtFunction(v0, flightTime);
-		flightTime += dt;
-	}
-    //´¹Ö±ËÙ¶È£º
-	double v0_y = v0 * sin(rad);
-	//Êµ¼ÊÂäµã´¹Ö±¸ß¶È£º
-	double realPoint_y = v0_y * flightTime - (1.0 / 2.0 * g * flightTime * flightTime);
+    {
+        x += xtFunction(v0, flightTime);
+        flightTime += dt;
+    }
+    //å‚ç›´é€Ÿåº¦ï¼š
+    double v0_y = v0 * sin(rad);
+    //å®é™…è½ç‚¹å‚ç›´é«˜åº¦ï¼š
+    double realPoint_y = v0_y * flightTime - (1.0 / 2.0 * g * flightTime * flightTime);
     return realPoint_y;
 }
 
 int main()
 {
-	double targetDistance;
-	cout << "ÇëÊäÈëÄ¿±ê¾àÀë£º";
-	cin >> targetDistance;
+    double targetDistance;
+    cout << "è¯·è¾“å…¥ç›®æ ‡è·ç¦»ï¼š";
+    cin >> targetDistance;
 
-	//½Ç¶È×ª»¯Îª»¡¶È£º
-	double rad = theta0 * PI / 180.0;
-	//Ä¿±êË®Æ½¾àÀë£º
-	double targetPoint_x = targetDistance * cos(rad);
-	// Ä¿±ê´¹Ö±¾àÀë£º
-	double targetPoint_y = targetDistance * sin(rad);
-	
-	//Ã¿´ÎÆ«×ª½Ç¶È£º
-	double theta = theta0;
-	//ÁÙÊ±´¹Ö±¾àÀë£º
-	double tempPoint_y = targetPoint_y;
-	//Êµ¼ÊÂäµã´¹Ö±¾àÀë£º
-	double realPoint_y;
-	//Îó²î£º
-	double deltaH = 0;
+    double rad = theta0 * PI / 180.0;  //è§’åº¦è½¬åŒ–ä¸ºå¼§åº¦
+    double targetPoint_x = targetDistance * cos(rad);  //ç›®æ ‡æ°´å¹³è·ç¦»
+    double targetPoint_y = targetDistance * sin(rad);  // ç›®æ ‡å‚ç›´è·ç¦»
+    double theta = theta0;  //æ¯æ¬¡åè½¬è§’åº¦
+    double tempPoint_y = targetPoint_y;  //ä¸´æ—¶å‚ç›´è·ç¦»
+    double realPoint_y;  //å®é™…è½ç‚¹å‚ç›´è·ç¦»ï¼š
+    double deltaH = 0;  //è¯¯å·®
 
-	for (int i = 1; i <= 50; i++)
-	{
-		//Êµ¼ÊÂäµã¸ß¶È£º
-		realPoint_y = ballisticCompensation(targetPoint_x, tempPoint_y, rad);
-		//µ¯µÀ²¹³¥Îó²î£º
-		deltaH = targetPoint_y - realPoint_y;
-		cout << "µÚ" << i << "´Îµü´ú£ºÑö½Ç£º" << theta << "£¬ÁÙÊ±Ä¿±êµãyÖµ£º"
-			<< tempPoint_y << "£¬¸ß¶ÈÎó²î£º" << deltaH << endl;
-		//µ÷ÕûÁÙÊ±Ä¿±ê¸ß¶È£º
-		tempPoint_y = tempPoint_y + deltaH;
-		//µ÷Õû½Ç¶È£º
-		rad = atan(tempPoint_y / targetPoint_x);
-		theta = rad * 180.0 / PI;
-	}
-	return 0;
+    for (int i = 1; i <= 20; i++)
+    {
+        //è®¡ç®—è½ç‚¹å’Œè¯¯å·®ï¼š
+        realPoint_y = ballisticCompensation(targetPoint_x, tempPoint_y, rad);
+        deltaH = targetPoint_y - realPoint_y;
+
+        cout << "ç¬¬" << i << "æ¬¡è¿­ä»£ï¼šä»°è§’ï¼š" << theta << "ï¼Œä¸´æ—¶ç›®æ ‡ç‚¹yå€¼ï¼š"
+             << tempPoint_y << "ï¼Œé«˜åº¦è¯¯å·®ï¼š" << deltaH << endl;
+
+        //è°ƒæ•´ä¸´æ—¶ç›®æ ‡é«˜åº¦å’Œè§’åº¦ï¼š
+        tempPoint_y = tempPoint_y + deltaH;
+        rad = atan(tempPoint_y / targetPoint_x);
+        theta = rad * 180.0 / PI;
+    }
+    return 0;
 }
