@@ -13,7 +13,7 @@ const double Cd = 0.47;        //阻力系统
 const double rho = 1.169;      //空气密度
 const double A = 0.00226;      //截面积
 
-//dt时间内的水平位移：
+//空气阻力模型下dt时间内的水平位移：
 double xtFunction(double v0, double t)
 {
     return v0 / (Cd * A * rho * v0 * t + 1) * dt;
